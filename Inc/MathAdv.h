@@ -27,6 +27,15 @@ double combination(int n, int k);
 inline double sech(double);
 inline double csch(double);
 inline double coth(double);
+
 inline double asech(double);
 inline double acsch(double);
 inline double acoth(double);
+
+inline double sec(double);
+inline double csc(double);
+inline double cot(double);
+
+inline double asec(double);
+inline double acsc(double);
+inline double acot(double);

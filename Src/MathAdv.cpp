@@ -83,7 +83,35 @@ double acoth(double x)
 	return atanh(1.0 / x);
 }
 
+double sec(double x)
+{
+	return 1.0 / cos(x);
+}
 
+double csc(double x)
+{
+	return 1.0 / sin(x);
+}
+
+double cot(double x)
+{
+	return 1.0 / tan(x);
+}
+
+double asec(double x)
+{
+	return acos(1.0 / x);
+}
+
+double acsc(double x)
+{
+	return asin(1.0 / x);
+}
+
+double acot(double x)
+{
+	return atan(1.0 / x);
+}
 
 
 
