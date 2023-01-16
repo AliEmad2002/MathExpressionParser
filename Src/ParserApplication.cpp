@@ -1,3 +1,17 @@
+/*
+ * parserApplication.cpp
+ * By: Ali Emad Ali
+ * Date created: 2021-06-21
+ */
+
+#include <iostream>
+#include "../Inc/MathAdv.h"
+#include "../Inc/StringAdv.h"
+#include "../Inc/MathParser.h"
+#include "../Inc/ParserApplication.h"
+
+using namespace std;
+
 /*******************************************************************************
  * Derivative evaluation:
  ******************************************************************************/

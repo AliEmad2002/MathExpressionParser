@@ -76,6 +76,9 @@ typedef struct
 	 */
 	double MathParser_doubleEval(
 		double x = 0.0, double y = 0.0, double z = 0.0, int nC = 0, int oC = 0);
-}MathParser;
+}MathParser_t;
 
-
+typedef struct{
+	const char* wordStr; 			// pointer to a constant string.d
+	double(*funcPtr)(double);		// pointer to function.
+}MathParser_Function_t;

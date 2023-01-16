@@ -9,10 +9,10 @@
 #include <conio.h>
 #include <iomanip>
 #include <ctime>
-#include "MathAdv.h"
-#include "StringAdv.h"
-#include "MathParser.h"
-#include "ParserApplication.h"
+#include "../Inc/MathAdv.h"
+#include "../Inc/StringAdv.h"
+#include "../Inc/MathParser.h"
+#include "../Inc/ParserApplication.h"
 
 using namespace std;
 

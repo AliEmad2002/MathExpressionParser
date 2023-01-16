@@ -23,3 +23,10 @@ double factorial(int n);
 /*	combination (see math defintion)	*/
 double combination(int n, int k);
 
+/*	functions fot implemented in math.h	*/
+inline double sech(double);
+inline double csch(double);
+inline double coth(double);
+inline double asech(double);
+inline double acsch(double);
+inline double acoth(double);

@@ -1,3 +1,15 @@
+/*
+ * MathAdv.cpp
+ * By: Ali Emad Ali
+ * Date created: 2021-06-21
+ */
+
+#include <iostream>
+#include "math.h"
+#include "../Inc/MathAdv.h"
+
+using namespace std;
+
 double pos_powr(double i, unsigned int n)
 {
     if (n == 0)
@@ -40,3 +52,45 @@ double combination(int n, int k)
     double result = static_cast<double>(numerator) / factorial(k);
     return result;
 }
+
+double sech(double x)
+{
+	return 1.0 / cosh(x);
+}
+
+double csch(double x)
+{
+	return 1.0 / sinh(x);
+}
+
+double coth(double x)
+{
+	return 1.0 / tanh(x);
+}
+
+double asech(double x)
+{
+	return acosh(1.0 / x);
+}
+
+double acsch(double x)
+{
+	return asinh(1.0 / x);
+}
+
+double acoth(double x)
+{
+	return atanh(1.0 / x);
+}
+
+
+
+
+
+
+
+
+
+
+
+
