@@ -1,8 +1,11 @@
 /*
- * StringAdv.cpp
+ * StringAdv.h
  * By: Ali Emad Ali
  * Date created: 2021-06-21
  */
+ #pragma once
+
+using namespace std;
 
 /*
  * stucks 'ch' at str[k], shifts all characters after it one byte forward

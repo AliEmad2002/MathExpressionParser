@@ -1,4 +1,14 @@
 /*
+ * MathAdv.h
+ * By: Ali Emad Ali
+ * Date created: 2021-06-21
+ */
+ 
+ #pragma once
+
+using namespace std;
+
+/*
  * returns i ^ n
  * n range: 0 and all possible positive numbers.
  */
