@@ -69,12 +69,13 @@ typedef struct
 							// 'str' needs to be checked for syntax errors and
 							// remove spaces from. This variable is used to
 							// store that state.
+							
+	/*
+	 * Function that evaluates object of struct "MathParser" into a numerical
+	 * value.
+	 */
+	double MathParser_doubleEval(
+		double x = 0.0, double y = 0.0, double z = 0.0, int nC = 0, int oC = 0);
 }MathParser;
 
-/*
- * Function that evaluates object of struct "MathParser" into a numerical
- * value.
-*/
-double MathParser_doubleEval(
-	MathParser* parser,
-	double x = 0.0, double y = 0.0, double z = 0.0, int nC = 0, int oC = 0);
+
