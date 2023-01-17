@@ -11,6 +11,7 @@
 #include <ctime>
 #include "../Inc/MathAdv.h"
 #include "../Inc/StringAdv.h"
+#include "../Inc/MathParser_config.h"
 #include "../Inc/MathParser.h"
 #include "../Inc/ParserApplication.h"
 
@@ -48,9 +49,9 @@ int main()
         double x;
         cout << "x = ";
         cin >> x;
-        parser* p = new parser[1];
+        MathParser_t* p = new MathParser_t[1];
         p->str = str;
-        double result = p->eval(x);
+        double result = p->MathParser_doubleEval(x);
         cout << "f(" << x << ") = " << result << endl;
         delete p;
     }

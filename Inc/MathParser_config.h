@@ -17,11 +17,19 @@ double foo(double);
 double foo(int);
 
 /*******************************************************************************
+ * struct MathParser_Function_t:
+ ******************************************************************************/
+typedef struct{
+	const char* wordStr; 			// pointer to a constant string.d
+	double(*funcPtr)(double);		// pointer to function.
+}MathParser_Function_t;
+
+/*******************************************************************************
  * Array of words (strings) and cpp functions they represent.
  * All functions MUST be of type: double(*)(double)
  * (User configurable):
  ******************************************************************************/
-const MathParser_Function_t MathParser_FunctionArr[] = {
+static const MathParser_Function_t MathParser_FunctionArr[] = {
 
 	/*	square root	*/
 	(MathParser_Function_t){"sqrt", static_cast<double(*)(double)>(sqrt)},
@@ -64,5 +72,8 @@ const MathParser_Function_t MathParser_FunctionArr[] = {
 
 	/*	Abslute value	*/
 	(MathParser_Function_t){"abs", static_cast<double(*)(double)>(abs)},
+
+	/*	Array terminator	*/
+	(MathParser_Function_t){NULL, NULL}
 };
 

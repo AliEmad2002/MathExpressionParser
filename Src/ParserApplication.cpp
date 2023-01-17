@@ -5,6 +5,7 @@
  */
 
 #include <iostream>
+#include <math.h>
 #include "../Inc/MathAdv.h"
 #include "../Inc/StringAdv.h"
 #include "../Inc/MathParser.h"
@@ -17,11 +18,11 @@ using namespace std;
  ******************************************************************************/
 double derivative(char* str, int n, double x)
 {
-    parser* p = new parser[1];
+	MathParser_t* p = new MathParser_t;
     p->str = str;
     double result;
     if (n == 0)
-        result = p->eval(x);
+        result = p->MathParser_doubleEval(x);
     else
     {
         double N = Number_Of_Digits(x);
@@ -32,7 +33,7 @@ double derivative(char* str, int n, double x)
             h = pow(10.0, -9.0 / (n * N));
         double sum = 0.0;
         for (int k = 0; k <= n; k++)
-            sum += combination(n, k) * pow(-1.0, k) * p->eval(x + k * h);
+            sum += combination(n, k) * pow(-1.0, k) * p->MathParser_doubleEval(x + k * h);
         result = pow(-1.0, n) * sum / pow(h, n);
     }
     delete p;
@@ -42,9 +43,10 @@ double derivative(char* str, int n, double x)
 /*******************************************************************************
  * Integrals:
  ******************************************************************************/
+extern double speed;
 double single_integral(char* str, double xL, double xH)
 {
-    parser pp;
+	MathParser_t pp;
     pp.str = str;
 
     ///===========================
@@ -64,7 +66,7 @@ double single_integral(char* str, double xL, double xH)
     cout << endl;
     for (int i = 0; i < n; i++)
     {
-        result += pp.eval(Xi);
+        result += pp.MathParser_doubleEval(Xi);
         Xi += dx;
         count++;
         if (count == static_cast<int>(l * 0.01 * N)) ///every 1% of N
@@ -80,7 +82,7 @@ double single_integral(char* str, double xL, double xH)
 
 double double_integral(char* str, double xL, double xH, double yL, double yH)
 {
-    parser pp;
+	MathParser_t pp;
     pp.str = str;
     double n; // number of x sections
     double m; // number of y sections
@@ -110,7 +112,7 @@ double double_integral(char* str, double xL, double xH, double yL, double yH)
         Xi = xL + 0.5 * dx;
         for (int i = 0; i < n; i++)
         {
-            result += pp.eval(Xi, Yj);
+            result += pp.MathParser_doubleEval(Xi, Yj);
             Xi += dx;
         }
         Yj += dy;
@@ -130,7 +132,7 @@ double triple_integral(
 	char* str,
 	double xL, double xH, double yL, double yH, double zL, double zH)
 {
-    parser pp;
+	MathParser_t pp;
     pp.str = str;
     double n; ///number of x sections
     double m; ///number of y sections
@@ -169,7 +171,7 @@ double triple_integral(
             Xi = xL + 0.5 * dx;
             for (int i = 0; i < n; i++)
             {
-                result += pp.eval(Xi, Yj, Zk);
+                result += pp.MathParser_doubleEval(Xi, Yj, Zk);
                 Xi += dx;
             }
             Yj += dy;
@@ -193,14 +195,14 @@ double triple_integral(
  /*	using newton-raphson	*/
  double solve(char* str, double X0)
 {
-    parser* p = new parser[1];
+	MathParser_t* p = new MathParser_t;
     p->str = str;
     double X_n = X0;
     double X_n1;
     double h = 1e-9 * speed;
-    while (abs(p->eval(X_n)) >= h)
+    while (abs(p->MathParser_doubleEval(X_n)) >= h)
     {
-        X_n1 = X_n - p->eval(X_n) / derivative(str, 1, X_n);
+        X_n1 = X_n - p->MathParser_doubleEval(X_n) / derivative(str, 1, X_n);
         if (isnan(X_n1) || isinf(X_n1))
             X_n1 = X_n + 1.0;
         X_n = X_n1;

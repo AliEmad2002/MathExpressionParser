@@ -10,13 +10,13 @@
 #include <iomanip>
 #include <ctime>
 #include <stdlib.h>
+#include <string.h>
 #include "../Inc/MathAdv.h"
 #include "../Inc/StringAdv.h"
+#include "../Inc/MathParser_config.h"
 #include "../Inc/MathParser.h"
 
 using namespace std;
-
-double speed;
 
 /*******************************************************************************
  * Type of a character (byte):
@@ -58,13 +58,20 @@ double To_after_point(char* str, int j, int k)
 
 double EVAL(char* str, int start, int End, double x, double y, double z)
 {
-    parser* p = new parser;
+	/*	allocate new temporary object of 'MathParser_t'	*/
+    MathParser_t* p = new MathParser_t;
+
+    /*	allocate its string	*/
     int n = End - start + 2;
     p->str = new char[n];
     for (int j = 0; j < n - 1; j++)
         p->str[j] = str[j + start];
     p->str[n - 1] = '\0';
-    double E = p->eval(x, y, z);
+
+    /*	evaluate	*/
+    double E = p->MathParser_doubleEval(x, y, z);
+
+    /*	free allocated memory	*/
     delete p->str;
     delete p;
     return E;
@@ -78,7 +85,7 @@ double numerical_EVAL(double num[50], char op[30], int start, int end_num)
     ///int start is the start of both num and op
     ///but note that end_op is always one decimal less than end_num
     int end_op = end_num - 1;
-    parser* pp = new parser;
+    MathParser_t* pp = new MathParser_t;
     pp->str = new char[1];
     *(pp->str) = '\n';
     int numCount = end_num - start + 1;
@@ -88,7 +95,7 @@ double numerical_EVAL(double num[50], char op[30], int start, int end_num)
     for (int j = 0; j < opCount; j++)
         pp->op[j] = op[j + start];
 	///here the value of x,y,z would not matter, as I am parsing some numbers.
-    double RESULT = pp->eval(0.0, 0.0, 0.0, numCount, opCount); 
+    double RESULT = pp->MathParser_doubleEval(0.0, 0.0, 0.0, numCount, opCount);
     delete pp->str;
     delete pp;
     return RESULT;
@@ -97,8 +104,8 @@ double numerical_EVAL(double num[50], char op[30], int start, int end_num)
 /*******************************************************************************
  * struct MathParser:
  ******************************************************************************/
-double MathParser::MathParser_doubleEval(
-	double x = 0.0, double y = 0.0, double z = 0.0, int nC = 0, int oC = 0)
+double MathParser_t::MathParser_doubleEval(
+	double x, double y, double z, int nC, int oC)
 {
 	for (int k = 0; str[k] != '\0' && never_ran; k++)
 	{
@@ -222,32 +229,6 @@ double MathParser::MathParser_doubleEval(
 		///*********************************************************************
 		else if (type(str[i]) == MathParser_CharType_Letter)
 		{
-			/*	find where this word ends	*/
-			int j;
-			for (j = i + 1; type(str[j]) == MathParser_CharType_Letter; j++);
-
-			/*	parse inputs of this word (i.e.: arguments), if any	*/
-			double arguments;
-			if (str[j] == '(')
-			{
-				/*	Find the closer of 'j':	*/
-				int closer = find_closing_bracket(str, j);
-				/*	Parse every thing between opener and closer	*/
-				arguments = EVAL(str, j + 1, closer - 1, x, y, z);
-			}
-
-			/*	get pointer to the cpp function that this word implements	*/
-
-			/*
-			 * apply the function that this word implements, as input, give it:
-			 * 'x', 'y', 'z', 'arguments'
-			 */
-
-			/*	add function's numerical value to num array	*/
-
-			/*	update 'i'	*/
-
-
 			if (str[i] == 'x')
 			{
 				// Just put its value in its place:
@@ -274,327 +255,44 @@ double MathParser::MathParser_doubleEval(
 				num[numCount++] = 3.14159265359;
 				i++;
 			}
-			///=================================================================
-			else if (
-				str[i] == 's' && str[i + 1] == 'q' &&
-				str[i + 2] == 'r' && str[i + 3] == 't') // sqrt:
+			else
 			{
-				int opener = i + 4;
-				// Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				/*	Parse every thing between opener and closer	*/
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
+				/*	find where this word ends	*/
+				int j;
+				for (
+					j = i + 1; type(str[j]) == MathParser_CharType_Letter; j++);
 
-				num[numCount++] = pow(inside, 0.5);
-				i = closer;
-			}
-			///=================================================================
-			else if (
-				str[i] == 's' && str[i + 1] == 'i' &&
-				str[i + 2] == 'n' && str[i + 3] == 'h') // sinh:
-			{
-				int opener = i + 4;
+				/*
+				 * get pointer to the cpp function that this word implements
+				 */
+				double(*funcPtr)(double) =
+					MathParse_ptrGetFunction(str, i, j-1);
 
-				// Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
+				/*	parse inputs of this word (i.e.: arguments), if any	*/
+				double arguments = 0.0;
+				if (str[j] == '(')
+				{
+					/*	Find the closer of 'j':	*/
+					int closer = find_closing_bracket(str, j);
+					/*	Parse every thing between opener and closer	*/
+					arguments = EVAL(str, j + 1, closer - 1, x, y, z);
+					i = closer;
+				}
+				else
+					i = j - 1;
 
-				/*	Parse every thing between opener and closer	*/
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = sinh(inside);
-				i = closer;
-			}
-			///=================================================================
-			else if (
-				str[i] == 'c' && str[i + 1] == 'o' &&
-				str[i + 2] == 's' && str[i + 3] == 'h') // cosh:
-			{
-				int opener = i + 4;
-				///Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				///Parse every thing between opener and closer in a variable called inside:
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = cosh(inside);
-				i = closer;
-			}
-			///================================================================================
-			else if (str[i] == 't' && str[i + 1] == 'a' && str[i + 2] == 'n' && str[i + 3] == 'h') ///tanh:
-			{
-				int opener = i + 4;
-				///Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				///Parse every thing between opener and closer in a variable called inside:
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = tanh(inside);
-				i = closer;
-			}
-			///================================================================================
-			else if (str[i] == 's' && str[i + 1] == 'e' && str[i + 2] == 'c' && str[i + 3] == 'h') ///sech:
-			{
-				int opener = i + 4;
-				///Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				///Parse every thing between opener and closer in a variable called inside:
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = 1.0 / cosh(inside);
-				i = closer;
-			}
-			///================================================================================
-			else if (str[i] == 'c' && str[i + 1] == 's' && str[i + 2] == 'c' && str[i + 3] == 'h') ///csch:
-			{
-				int opener = i + 4;
-				///Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				///Parse every thing between opener and closer in a variable called inside:
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = 1.0 / sinh(inside);
-				i = closer;
-			}
-			///================================================================================
-			else if (str[i] == 'c' && str[i + 1] == 'o' && str[i + 2] == 't' && str[i + 3] == 'h') ///coth
-			{
-				int opener = i + 4;
-				///Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				///Parse every thing between opener and closer in a variable called inside:
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = 1.0 / tanh(inside);
-				i = closer;
-			}
-			///================================================================================
-			else if (str[i] == 'a' && str[i + 1] == 's' && str[i + 2] == 'i' && str[i + 3] == 'n' && str[i + 4] == 'h') ///asinh:
-			{
-				int opener = i + 5;
-				///Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				///Parse every thing between opener and closer in a variable called inside:
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = asinh(inside);
-				i = closer;
-			}
-			///================================================================================
-			else if (str[i] == 'a' && str[i + 1] == 'c' && str[i + 2] == 'o' && str[i + 3] == 's' && str[i + 4] == 'h') ///acosh:
-			{
-				int opener = i + 5;
-				///Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				///Parse every thing between opener and closer in a variable called inside:
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = acosh(inside);
-				i = closer;
-			}
-			///================================================================================
-			else if (str[i] == 'a' && str[i + 1] == 't' && str[i + 2] == 'a' && str[i + 3] == 'n' && str[i + 4] == 'h') ///atanh:
-			{
-				int opener = i + 5;
-				///Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				///Parse every thing between opener and closer in a variable called inside:
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = atanh(inside);
-				i = closer;
-			}
-			///================================================================================
-			else if (str[i] == 'a' && str[i + 1] == 's' && str[i + 2] == 'e' && str[i + 3] == 'c' && str[i + 4] == 'h') ///asech:
-			{
-				int opener = i + 5;
-				///Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				///Parse every thing between opener and closer in a variable called inside:
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = acosh(1.0 / inside);
-				i = closer;
-			}
-			///================================================================================
-			else if (str[i] == 'a' && str[i + 1] == 'c' && str[i + 2] == 's' && str[i + 3] == 'c' && str[i + 4] == 'h') ///acsch:
-			{
-				int opener = i + 5;
-				///Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				///Parse every thing between opener and closer in a variable called inside:
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = asinh(1.0 / inside);
-				i = closer;
-			}
-			///================================================================================
-			else if (str[i] == 'a' && str[i + 1] == 'c' && str[i + 2] == 'o' && str[i + 3] == 't' && str[i + 4] == 'h') ///acoth:
-			{
-				int opener = i + 5;
-				///Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				///Parse every thing between opener and closer in a variable called inside:
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = atanh(1.0 / inside);
-				i = closer;
-			}
-			///================================================================================
-			else if (str[i] == 's' && str[i + 1] == 'i' && str[i + 2] == 'n') ///sin:
-			{
-				int opener = i + 3;
-				///Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				///Parse every thing between opener and closer in a variable called inside:
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = sin(inside);
-				i = closer;
-			}
-			///================================================================================
-			else if (str[i] == 'c' && str[i + 1] == 'o' && str[i + 2] == 's') ///cos:
-			{
-				int opener = i + 3;
-				///Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				///Parse every thing between opener and closer in a variable called inside:
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = cos(inside);
-				i = closer;
-			}
-			///================================================================================
-			else if (str[i] == 't' && str[i + 1] == 'a' && str[i + 2] == 'n') ///tan:
-			{
-				int opener = i + 3;
-				///Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				///Parse every thing between opener and closer in a variable called inside:
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = tan(inside);
-				i = closer;
-			}
-			///================================================================================
-			else if (str[i] == 's' && str[i + 1] == 'e' && str[i + 2] == 'c') ///sec:
-			{
-				int opener = i + 3;
-				///Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				///Parse every thing between opener and closer in a variable called inside:
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = 1.0 / cos(inside);
-				i = closer;
-			}
-			///================================================================================
-			else if (str[i] == 'c' && str[i + 1] == 's' && str[i + 2] == 'c') ///csc:
-			{
-				int opener = i + 3;
-				///Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				///Parse every thing between opener and closer in a variable called inside:
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = 1.0 / sin(inside);
-				i = closer;
-			}
-			///================================================================================
-			else if (str[i] == 'c' && str[i + 1] == 'o' && str[i + 2] == 't') ///cot:
-			{
-				int opener = i + 3;
-				///Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				///Parse every thing between opener and closer in a variable called inside:
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = 1.0 / tan(inside);
-				i = closer;
-			}
-			///================================================================================
-			else if (str[i] == 'a' && str[i + 1] == 's' && str[i + 2] == 'i' && str[i + 3] == 'n') ///asin:
-			{
-				int opener = i + 4;
-				///Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				///Parse every thing between opener and closer in a variable called inside:
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = asin(inside);
-				i = closer;
-			}
-			///================================================================================
-			else if (str[i] == 'a' && str[i + 1] == 'c' && str[i + 2] == 'o' && str[i + 3] == 's') ///acos:
-			{
-				int opener = i + 4;
-				///Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				///Parse every thing between opener and closer in a variable called inside:
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = acos(inside);
-				i = closer;
-			}
-			///================================================================================
-			else if (str[i] == 'a' && str[i + 1] == 't' && str[i + 2] == 'a' && str[i + 3] == 'n') ///atan:
-			{
-				int opener = i + 4;
-				///Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				///Parse every thing between opener and closer in a variable called inside:
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = atan(inside);
-				i = closer;
-			}
-			///================================================================================
-			else if (str[i] == 'a' && str[i + 1] == 's' && str[i + 2] == 'e' && str[i + 3] == 'c') ///asec:
-			{
-				int opener = i + 4;
-				///Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				///Parse every thing between opener and closer in a variable called inside:
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = acos(1.0 / inside);
-				i = closer;
-			}
-			///================================================================================
-			else if (str[i] == 'a' && str[i + 1] == 'c' && str[i + 2] == 's' && str[i + 3] == 'c') ///acsc:
-			{
-				int opener = i + 4;
-				///Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				///Parse every thing between opener and closer in a variable called inside:
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = asin(1.0 / inside);
-				i = closer;
-			}
-			///================================================================================
-			else if (str[i] == 'a' && str[i + 1] == 'c' && str[i + 2] == 'o' && str[i + 3] == 't') ///acot:
-			{
-				int opener = i + 4;
-				///Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				///Parse every thing between opener and closer in a variable called inside:
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = atan(1.0 / inside);
-				i = closer;
-			}
-			///================================================================================
-			else if (str[i] == 'l' && str[i + 1] == 'n') ///ln:
-			{
-				int opener = i + 2;
-				///Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				///Parse every thing between opener and closer in a variable called inside:
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = log(inside);
-				i = closer;
-			}
-			///================================================================================
-			else if (str[i] == 'l' && str[i + 1] == 'o' && str[i + 2] == 'g' && str[i + 3] == '(') ///log: (base 10)
-			{
-				int opener = i + 3;
-				///Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				///Parse every thing between opener and closer in a variable called inside:
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = log10(inside);
-				i = closer;
-			}
-			///================================================================================
-			else if (str[i] == 'a' && str[i + 1] == 'b' && str[i + 2] == 's') ///abs
-			{
-				int opener = i + 3;
-				///Find the closer of 'opener':
-				int closer = find_closing_bracket(str, opener);
-				///Parse every thing between opener and closer in a variable called inside:
-				double inside = EVAL(str, opener + 1, closer - 1, x, y, z);
-				num[numCount++] = abs(inside);
-				i = closer;
+				/*
+				 * apply the function that this word implements, as input, give
+				 * it: 'arguments'
+				 *
+				 * and add function's numerical value to num array
+				 */
+				num[numCount++] = funcPtr(arguments);
 			}
 		}
 
-		///*************************************************************************
-		else if (str[i] == '(') ///opener
+		///*********************************************************************
+		else if (str[i] == '(') // opener
 		{
 			///Find the closer:
 			int closer = find_closing_bracket(str, i);
@@ -606,6 +304,7 @@ double MathParser::MathParser_doubleEval(
 
 
 	}
+
 	for (int j = 0; j < opCount; j++)
 	{
 		if (op[j] == '^')
@@ -694,7 +393,30 @@ double MathParser::MathParser_doubleEval(
 	return num[numCount - 1];
 }
 
+/*******************************************************************************
+ * struct MathParser_Function_t:
+ ******************************************************************************/
+double(*MathParse_ptrGetFunction(char* str, int start, int end))(double)
+{
+	/*	copy str[start] : str[end] to a new temp string	*/
+	int tempStrLen = end - start + 2;
+	char* tempStr = new char[tempStrLen];
+	for(int i = start; i <= end; i++)
+		tempStr[i - start] = str[i];
+	tempStr[tempStrLen - 1] = '\0';
 
+	/*	loop on function array and find a match	*/
+	for (int i = 0; MathParser_FunctionArr[i].wordStr != NULL; i++)
+	{
+		if (strcmp(tempStr, MathParser_FunctionArr[i].wordStr) == 0)
+		{
+			return MathParser_FunctionArr[i].funcPtr;
+		}
+	}
+
+	/*	if it was not found in arr, return NULL	*/
+	return NULL;
+}
 
 
 

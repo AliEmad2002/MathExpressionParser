@@ -78,7 +78,7 @@ typedef struct
 		double x = 0.0, double y = 0.0, double z = 0.0, int nC = 0, int oC = 0);
 }MathParser_t;
 
-typedef struct{
-	const char* wordStr; 			// pointer to a constant string.d
-	double(*funcPtr)(double);		// pointer to function.
-}MathParser_Function_t;
+/*******************************************************************************
+ * struct MathParser_Function_t:
+ ******************************************************************************/
+double(*MathParse_ptrGetFunction(char* str, int start, int end))(double);
