@@ -1,13 +1,10 @@
 /*
- * StringAdv.cpp
+ * StringAdv.c
  * By: Ali Emad Ali
  * Date created: 2021-06-21
  */
 
-#include <iostream>
 #include "../Inc/StringAdv.h"
-
-using namespace std;
 
 void stuck(char* str, char ch, int k)
 {

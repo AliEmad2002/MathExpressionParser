@@ -4,25 +4,28 @@
  * Date created: 2021-06-21
  */
 
-#include <iostream>
+#include "../Inc/Std_Types.h"
 #include <math.h>
+#include <string.h>
+#include <stdio.h>
 #include "../Inc/MathAdv.h"
 #include "../Inc/StringAdv.h"
+#include "../Inc/LinkedList.h"
+#include "../Inc/MathParser_config.h"
 #include "../Inc/MathParser.h"
 #include "../Inc/ParserApplication.h"
-
-using namespace std;
 
 /*******************************************************************************
  * Derivative evaluation:
  ******************************************************************************/
 double derivative(char* str, int n, double x)
 {
-	MathParser_t* p = new MathParser_t;
-    p->str = str;
+	MathParser_t p;
+    MathParser_b8SetExpressionString(&p, str, 0, strlen(str) - 1);
+
     double result;
     if (n == 0)
-        result = p->MathParser_doubleEval(x);
+        result = MathParser_d64Evaluate(&p, x, 0.0, 0.0);
     else
     {
         double N = Number_Of_Digits(x);
@@ -33,10 +36,12 @@ double derivative(char* str, int n, double x)
             h = pow(10.0, -9.0 / (n * N));
         double sum = 0.0;
         for (int k = 0; k <= n; k++)
-            sum += combination(n, k) * pow(-1.0, k) * p->MathParser_doubleEval(x + k * h);
+            sum +=
+            	combination(n, k) * pow(-1.0, k) *
+				MathParser_d64Evaluate(&p, x + k * h, 0.0, 0.0);
         result = pow(-1.0, n) * sum / pow(h, n);
     }
-    delete p;
+
     return result;
 }
 
@@ -46,8 +51,8 @@ double derivative(char* str, int n, double x)
 extern double speed;
 double single_integral(char* str, double xL, double xH)
 {
-	MathParser_t pp;
-    pp.str = str;
+	MathParser_t p;
+    MathParser_b8SetExpressionString(&p, str, 0, strlen(str) - 1);
 
     ///===========================
     double h = (1e-6) * speed;
@@ -59,19 +64,19 @@ double single_integral(char* str, double xL, double xH)
     double Xi = xL + 0.5 * dx;
     int count = 0;
     int l = 1;
-    unsigned int N = static_cast<unsigned int>(n);
-    cout << endl;
+    unsigned int N = (unsigned int)n;
+    printf("\n");
     for (int j = 0; j < 100; j++)
-        cout << char(176);
-    cout << endl;
+    	printf("%c", (char)176);
+    printf("\n");
     for (int i = 0; i < n; i++)
     {
-        result += pp.MathParser_doubleEval(Xi);
+        result += MathParser_d64Evaluate(&p, Xi, 0.0, 0.0);
         Xi += dx;
         count++;
-        if (count == static_cast<int>(l * 0.01 * N)) ///every 1% of N
+        if (count == (int)(l * 0.01 * N)) ///every 1% of N
         {
-            cout << char(178);
+        	printf("%c", (char)178);
             l++;
         }
     }
@@ -82,8 +87,9 @@ double single_integral(char* str, double xL, double xH)
 
 double double_integral(char* str, double xL, double xH, double yL, double yH)
 {
-	MathParser_t pp;
-    pp.str = str;
+	MathParser_t p;
+    MathParser_b8SetExpressionString(&p, str, 0, strlen(str) - 1);
+
     double n; // number of x sections
     double m; // number of y sections
     ///===========================
@@ -102,24 +108,24 @@ double double_integral(char* str, double xL, double xH, double yL, double yH)
     double Xi;
     int count = 0;
     int l = 1;
-    unsigned int M = static_cast<unsigned int>(m);
-    cout << endl;
+    unsigned int M = (unsigned int)m;
+    printf("\n");
     for (int j = 0; j < 100; j++)
-        cout << char(176);
-    cout << endl;
+    	printf("%c", (char)176);
+    printf("\n");
     for (int j = 0; j < m; j++)
     {
         Xi = xL + 0.5 * dx;
         for (int i = 0; i < n; i++)
         {
-            result += pp.MathParser_doubleEval(Xi, Yj);
+            result += MathParser_d64Evaluate(&p, Xi, Yj, 0.0);
             Xi += dx;
         }
         Yj += dy;
         count++;
-        if (count == static_cast<int>(l * 0.01 * M)) ///every 1% of M
+        if (count == (int)(l * 0.01 * M)) ///every 1% of M
         {
-            cout << char(178);
+        	printf("%c", (char)178);
             l++;
         }
     }
@@ -133,7 +139,7 @@ double triple_integral(
 	double xL, double xH, double yL, double yH, double zL, double zH)
 {
 	MathParser_t pp;
-    pp.str = str;
+    MathParser_b8SetExpressionString(&pp, str, 0, strlen(str) - 1);
     double n; ///number of x sections
     double m; ///number of y sections
     double p; ///number of z sections
@@ -158,11 +164,11 @@ double triple_integral(
     double Xi;
     int count = 0;
     int l = 1;
-    unsigned int P = static_cast<unsigned int>(p);
-    cout << endl;
+    unsigned int P = (unsigned int)p;
+    printf("\n");
     for (int j = 0; j < 100; j++)
-        cout << char(176);
-    cout << endl;
+    	printf("%c", (char)176);
+    printf("\n");
     for (int k = 0; k < p; k++)
     {
         Yj = yL + 0.5 * dy;
@@ -171,16 +177,16 @@ double triple_integral(
             Xi = xL + 0.5 * dx;
             for (int i = 0; i < n; i++)
             {
-                result += pp.MathParser_doubleEval(Xi, Yj, Zk);
+                result += MathParser_d64Evaluate(&pp, Xi, Yj, Zk);
                 Xi += dx;
             }
             Yj += dy;
         }
         Zk += dz;
         count++;
-        if (count == static_cast<int>(l * 0.01 * P)) ///every 1% of P
+        if (count == (int)(l * 0.01 * P)) ///every 1% of P
         {
-            cout << char(178);
+        	printf("%c", (char)178);
             l++;
         }
     }
@@ -195,19 +201,20 @@ double triple_integral(
  /*	using newton-raphson	*/
  double solve(char* str, double X0)
 {
-	MathParser_t* p = new MathParser_t;
-    p->str = str;
+	MathParser_t p;
+    MathParser_b8SetExpressionString(&p, str, 0, strlen(str) - 1);
+
     double X_n = X0;
     double X_n1;
     double h = 1e-9 * speed;
-    while (abs(p->MathParser_doubleEval(X_n)) >= h)
+    while (abs(MathParser_d64Evaluate(&p, X_n, 0.0, 0.0)) >= h)
     {
-        X_n1 = X_n - p->MathParser_doubleEval(X_n) / derivative(str, 1, X_n);
+        X_n1 = X_n - MathParser_d64Evaluate(&p, X_n, 0.0, 0.0) / derivative(str, 1, X_n);
         if (isnan(X_n1) || isinf(X_n1))
             X_n1 = X_n + 1.0;
         X_n = X_n1;
     }
-    delete p;
+
     return X_n;
 }
 

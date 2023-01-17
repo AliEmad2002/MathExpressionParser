@@ -4,9 +4,8 @@
  * Date created: 2021-06-21
  */
  
- #pragma once
-
-using namespace std;
+#ifndef INC_PARSERAPPLICATION_H_
+#define INC_PARSERAPPLICATION_H_
 
 /*******************************************************************************
  * Derivative evaluation:
@@ -33,6 +32,8 @@ double solve(char* str, double X0);
 /*******************************************************************************
  * Continuity checking: (Not done yet)
  ******************************************************************************/
-bool check_continuity(
+b8 check_continuity(
 	char* str,
 	double xL, double xH, double yL, double yH, double zL, double zH);
+
+#endif	/*	INC_PARSERAPPLICATION_H_	*/

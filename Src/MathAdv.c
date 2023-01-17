@@ -1,14 +1,11 @@
 /*
- * MathAdv.cpp
+ * MathAdv.c
  * By: Ali Emad Ali
  * Date created: 2021-06-21
  */
 
-#include <iostream>
 #include "math.h"
 #include "../Inc/MathAdv.h"
-
-using namespace std;
 
 double pos_powr(double i, unsigned int n)
 {
@@ -22,7 +19,7 @@ double pos_powr(double i, unsigned int n)
 
 int Number_Of_Digits(double x)
 {
-    int n = static_cast<int>(x);
+    int n = (int)x;
     int i = 0;
     int j = 1;
     while (n / j >= 1)
@@ -49,7 +46,7 @@ double combination(int n, int k)
     int i_max = n - k;
     for (int i = n; i > i_max; i--)
         numerator *= i;
-    double result = static_cast<double>(numerator) / factorial(k);
+    double result = (double)(numerator) / factorial(k);
     return result;
 }
 

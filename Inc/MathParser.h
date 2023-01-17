@@ -4,9 +4,9 @@
  * Date created: 2021-06-21
  */
  
- #pragma once
+#ifndef INC_MATHPARSER_H_
+#define INC_MATHPARSER_H_
 
-using namespace std;
 
 /*******************************************************************************
  * Type of a character (byte):
@@ -44,7 +44,7 @@ double To_after_point(char* str, int j, int k);
  * Evaluates a mathematical expression to a numerical value.
  * Internally creates object of struct parser.
  */
-double EVAL(char* str, int start, int End, double x, double y, double z);
+double EVAL(const char* str, int start, int end, double x, double y, double z);
 
 /*******************************************************************************
  * Evaluating arrays of numbers with their corrresponding operators:
@@ -56,29 +56,44 @@ double numerical_EVAL(double num[50], char op[30], int start, int end_num);
  ******************************************************************************/
 typedef struct
 {
-    char* str;				// string of math expression.
-    int n; 					// Length of str array.
-    
-	double num[50]; 		// numbers are stored Here.
-    char op[30]; 			// operators are stored Here.
-    
-	int numCount;			// used length of 'num' array
-    int opCount;			// used length of 'op' array
-	
-    bool never_ran = true;	// if the object was never ran before, the string
-							// 'str' needs to be checked for syntax errors and
-							// remove spaces from. This variable is used to
-							// store that state.
-							
-	/*
-	 * Function that evaluates object of struct "MathParser" into a numerical
-	 * value.
-	 */
-	double MathParser_doubleEval(
-		double x = 0.0, double y = 0.0, double z = 0.0, int nC = 0, int oC = 0);
+    char str[MAX_EXPRESSION_STR_LEN];			// string of math expression.
+    int n; 										// Used length of str array.
+
+    /*
+     * while parsing, number and operator may be re-arranged (due to algorithem)
+     * so linked list would be a good boost of arranging process.
+     */
+    Double_LinkedList_t numLinkedList[MAX_EXPRESSION_STR_LEN / 2];
+    Char_LinkedList_t opLinkedList[MAX_EXPRESSION_STR_LEN / 2];
+
+	int numCount;								// used length of 'num' array
+    int opCount;								// used length of 'op' array
 }MathParser_t;
+
+/*
+ * copies char array to p->str.
+ * checks for syntax errors first. If any, it returns false. otherwise it
+ * returns true.
+ */
+b8 MathParser_b8SetExpressionString(
+	MathParser_t* p, const char* expressionStr, int start, int end);
+
+/*
+ * inits linked list elemnts of a parser object.
+ * Note: parser object must be init first before evaluating. No checking before
+ * evaluation to reduce overhead.
+ */
+void MathParser_voidInitParserLinkedLists(MathParser_t* p);
+
+/*
+ * Function that evaluates object of struct "MathParser" into a numerical
+ * value.
+ */
+double MathParser_d64Evaluate(MathParser_t* p, double x, double y, double z);
 
 /*******************************************************************************
  * struct MathParser_Function_t:
  ******************************************************************************/
 double(*MathParse_ptrGetFunction(char* str, int start, int end))(double);
+
+#endif	/*	INC_MATHPARSER_H_	*/

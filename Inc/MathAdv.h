@@ -4,9 +4,8 @@
  * Date created: 2021-06-21
  */
  
- #pragma once
-
-using namespace std;
+#ifndef INC_MATHADV_H_
+#define INC_MATHADV_H_
 
 /*
  * returns i ^ n
@@ -39,3 +38,5 @@ double cot(double);
 double asec(double);
 double acsc(double);
 double acot(double);
+
+#endif /*	INC_MATHADV_H_	*/

@@ -3,9 +3,9 @@
  * By: Ali Emad Ali
  * Date created: 2021-06-21
  */
- #pragma once
 
-using namespace std;
+#ifndef INC_STRINGADV_H_
+#define INC_STRINGADV_H_
 
 /*
  * stucks 'ch' at str[k], shifts all characters after it one byte forward
@@ -22,3 +22,5 @@ int find_closing_bracket(char* str, int opening_B);
 
 /*	returns length of a string	*/
 int LEN(char* str);
+
+#endif	/*	INC_STRINGADV_H_	*/
