@@ -27,7 +27,7 @@ typedef struct{
 
 typedef double (*ddFunc_t)(double);
 /*******************************************************************************
- * Array of words (strings) and cpp functions they represent.
+ * Array of words (strings) and c functions they represent.
  * All functions MUST be of type: double(*)(double)
  * (User configurable):
  ******************************************************************************/
