@@ -6,7 +6,7 @@
 
 #include "../Inc/Std_Types.h"
 #include <math.h>
-#include <conio.h>
+//#include <conio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "../Inc/MathAdv.h"

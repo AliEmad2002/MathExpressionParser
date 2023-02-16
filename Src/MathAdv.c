@@ -12,7 +12,7 @@ double pos_powr(double i, unsigned int n)
     if (n == 0)
         return 1;
     double result = i;
-    for (int j = 1; j < n; j++)
+    for (unsigned int j = 1; j < n; j++)
         result *= i;
     return result;
 }
@@ -48,6 +48,11 @@ double combination(int n, int k)
         numerator *= i;
     double result = (double)(numerator) / factorial(k);
     return result;
+}
+
+double ddAbs(double x)
+{
+	return (x < 0.0) ? -x : x;
 }
 
 double sech(double x)

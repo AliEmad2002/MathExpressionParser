@@ -15,7 +15,7 @@
 /*******************************************************************************
  * Memory allocation parameters:
  ******************************************************************************/
-#define MAX_EXPRESSION_STR_LEN		100
+#define MAX_EXPRESSION_STR_LEN		40
 
 /*******************************************************************************
  * struct MathParser_Function_t:
@@ -73,7 +73,7 @@ static const MathParser_Function_t MathParser_FunctionArr[] = {
 	(MathParser_Function_t){"log10", (ddFunc_t)log10},
 
 	/*	Abslute value	*/
-	(MathParser_Function_t){"abs", (ddFunc_t)abs},
+	(MathParser_Function_t){"abs", (ddFunc_t)ddAbs},
 
 	/*	Array terminator	*/
 	(MathParser_Function_t){NULL, NULL}

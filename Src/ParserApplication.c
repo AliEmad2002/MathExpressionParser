@@ -207,7 +207,7 @@ double triple_integral(
     double X_n = X0;
     double X_n1;
     double h = 1e-9 * speed;
-    while (abs(MathParser_d64Evaluate(&p, X_n, 0.0, 0.0)) >= h)
+    while (ddAbs(MathParser_d64Evaluate(&p, X_n, 0.0, 0.0)) >= h)
     {
         X_n1 = X_n - MathParser_d64Evaluate(&p, X_n, 0.0, 0.0) / derivative(str, 1, X_n);
         if (isnan(X_n1) || isinf(X_n1))

@@ -4,6 +4,10 @@
  * Date created: 2021-06-21
  */
 
+#define TRY_PARSER		0
+
+#if TRY_PARSER
+
 #include "../Inc/Std_Types.h"
 #include <math.h>
 #include <conio.h>
@@ -257,3 +261,5 @@ int main()
     _getch();
     return 0;
 }
+
+#endif	/*	TRY_PARSER	*/

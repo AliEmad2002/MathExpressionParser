@@ -7,6 +7,7 @@
 #ifndef INC_MATHPARSER_H_
 #define INC_MATHPARSER_H_
 
+#include "MathParser_config.h"
 
 /*******************************************************************************
  * Type of a character (byte):
