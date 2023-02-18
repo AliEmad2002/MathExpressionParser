@@ -277,7 +277,10 @@ double MathParser_d64Evaluate(MathParser_t* p, double x, double y, double z)
 
 	/**	parse numbers and operators to find the final evaluation value	*/
 	if (p->opCount == 0)
+	{
+		opLinkedList[0].val = '\0';
 		opLinkedList[0].nextPtr = NULL;
+	}
 	else
 		opLinkedList[p->opCount - 1].nextPtr = NULL;
 
