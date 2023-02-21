@@ -48,7 +48,7 @@ double derivative(char* str, int n, double x)
 /*******************************************************************************
  * Integrals:
  ******************************************************************************/
-extern double speed;
+static double speed = 1;
 double single_integral(char* str, double xL, double xH)
 {
 	MathParser_t p;
